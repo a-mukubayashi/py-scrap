@@ -91,8 +91,11 @@ def analyze_detail_page(detail_page_url: str, driver: WebDriver):
 			if finish_element is not None:
 				finish_section = finish_element.text
 			finish_list = finish_section.split('　')
-			game_time = finish_list[0].strip()
-			finish = finish_list[1].strip()
+			# たまに勝敗やfinishがないデータがある
+			if 0 < len(finish_list) and finish_list[0] != '':
+				game_time = finish_list[0].strip()
+			if 1 < len(finish_list) and finish_list[1] != '':
+				finish = finish_list[1].strip()
 
 			# チャンピオンチームの勝敗
 			champ_game_image = match.select_one('.left > .resultImg > img')
