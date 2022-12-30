@@ -30,16 +30,15 @@ driver = webdriver.Chrome(service=service, options=options)
 # 要素が見つかるまで10秒待つ
 driver.implicitly_wait(10)
 
-# # 詳細ページのリンクを取得
-# detail_links = detail_page.get_detail_links(config.URL, driver)
+# 詳細ページのリンクを取得
+detail_page.get_detail_links(config.URL, driver)
 
-# # csvに書き込み
-# csv_defs.write_detail_links(detail_links)
-
-# 詳細ページの解析
+# 詳細ページの解析, csvへ出力
 links = csv_defs.read_detail_links()
-games = detail_page.analyze_detail_page(links[0], driver)
-csv_defs.write_detail_games(games)
+headers = ['champion', 'challenger', 'game_index', 'date', 'place', 'game_time', 'finish', 'win_name', 'lose_name', 'victory', 'source']
+csv_defs.write_detail_games([headers])
+for link in links:
+	detail_page.analyze_detail_page(link, driver)
 
 driver.quit()
 print("=== All done! ===")

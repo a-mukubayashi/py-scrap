@@ -1,15 +1,15 @@
 import time
-import re
 
 from bs4 import BeautifulSoup
 from selenium.webdriver.common.by import By
 from selenium.webdriver.chrome.webdriver import WebDriver
 
+import src.csv_defs as csv_defs
+
 # 一覧ページから詳細ページのリンクを取得
 # url: 読み込むサイトurl
 def get_detail_links(url: str, driver: WebDriver):
 	base_path = url + "/result/?pageNum="
-	page_link_list = []
 	# page_max = 136
 	page_max = 3
 	for x in range(page_max):
@@ -22,14 +22,12 @@ def get_detail_links(url: str, driver: WebDriver):
 		link_list = []
 		for link in button_links:
 			link_list.append(link.get_attribute('href'))
-		page_link_list.extend(link_list)
-		time.sleep(3)
-	return page_link_list
+		# csvに書き込み
+		csv_defs.write_detail_links(link_list)
+		time.sleep(2)
 
 def analyze_detail_page(detail_page_url: str, driver: WebDriver):
 	driver.get(detail_page_url)
-	headers = ['champion', 'challenger', 'game index', 'date', 'place', 'game_time', 'finish', 'win_name', 'lose_name', 'victory', 'source']
-	rows = [headers]
 	date = ''
 	place = ''
 	game_index = 0
@@ -119,6 +117,6 @@ def analyze_detail_page(detail_page_url: str, driver: WebDriver):
 
 		# 1列に詰める情報をまとめる
 		current_row = ['／'.join(champions), '／'.join(challengers), game_index, date, place, game_time, finish, win_name, lose_name, victory, source]
-		rows.append(current_row) # type: ignore
-
-	return rows
+		# 1行ごとcsvに書き込み
+		csv_defs.write_detail_games([current_row])
+		time.sleep(2)
