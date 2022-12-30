@@ -2,7 +2,7 @@ from selenium import webdriver
 from selenium.webdriver.chrome.options import Options
 from selenium.webdriver.chrome.service import Service as ChromeService
 
-import src.csv_utils as csv_utils
+import src.csv_defs as csv_defs
 import src.detail_page as detail_page
 import config
 
@@ -33,7 +33,7 @@ driver.implicitly_wait(10)
 detail_links = detail_page.get_page_links(config.URL, driver)
 
 # csvに書き込み
-csv_utils.write_detail_links(detail_links)
+csv_defs.write_detail_links(detail_links)
 
 driver.quit()
 print("=== All done! ===")
