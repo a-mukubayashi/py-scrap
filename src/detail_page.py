@@ -27,7 +27,7 @@ def get_detail_links(url: str, driver: WebDriver):
 
 def analyze_detail_page(detail_page_url: str, driver: WebDriver):
 	driver.get(detail_page_url)
-	headers = ['champion', 'challenger', 'game index', 'date', 'place', 'source']
+	headers = ['champion', 'challenger', 'game index', 'date', 'place', 'game_time', 'finish', 'win_name', 'lose_name', 'victory', 'source']
 	rows = [headers]
 	date = ''
 	place = ''
@@ -39,11 +39,15 @@ def analyze_detail_page(detail_page_url: str, driver: WebDriver):
 	match_information = soup.select('.match.section > dl > dt')
 	for info in match_information:
 		if info.text == '日時':
-			dd_tag_text = info.next_sibling.next_sibling.text # type: ignore
-			date = dd_tag_text.strip().replace('  ', '').replace('\n', '')
+			date_text = ''
+			if info.next_sibling is not None and info.next_sibling.next_sibling is not None:
+				date_text = info.next_sibling.next_sibling.text
+			date = date_text.strip().replace('  ', '').replace('\n', '')
 		if info.text == '会場':
-			dd_tag_text = info.next_sibling.next_sibling.text # type: ignore
-			place = dd_tag_text.strip().replace('  ', '').replace('\n', '')
+			place_text = ''
+			if info.next_sibling is not None and info.next_sibling.next_sibling is not None:
+				place_text = info.next_sibling.next_sibling.text
+			place = place_text.strip().replace('  ', '').replace('\n', '')
 
 	match_list = soup.select('.matchList.section > dl > dd')
 	game_index = 0
@@ -54,26 +58,36 @@ def analyze_detail_page(detail_page_url: str, driver: WebDriver):
 		# n対nの場合があるのでforする
 		match_rows = game.select('.matchWrapper > .row.cf')
 		for match in match_rows:
-			# championを抽出
+			# champion_tagを抽出
 			champ_tag = match.select_one('.left > .name')
 			if champ_tag == None:
 				champ_tag = match.select_one('.left > a > .name')
+
 			# set champions
+			champ_name = ''
 			if champ_tag is not None:
-				champions.extend([champ_tag.text])
-			elif champ_tag == None:
-				champions.extend([''])
+				champ_name = champ_tag.text
+			champions.extend([champ_name])
+
 			# challengerを抽出
 			challenger_tag = match.select_one('.right > .name')
 			if challenger_tag == None:
 				challenger_tag = match.select_one('.right > a > .name')
+
 			# set challenger
+			challenger_name = ''
 			if challenger_tag is not None:
-				challengers.extend([challenger_tag.text])
-			elif challenger_tag == None:
-				challengers.extend([''])
+				challenger_name = challenger_tag.text
+			challengers.extend([challenger_name])
+
+			# finish
+			finish_element = game.select_one('.finish > a')
+			finish = ''
+			if finish_element is not None:
+				finish = finish_element.text
+			print(finish)
 		# 1列に詰める情報をまとめる
-		current_row = ['／'.join(champions), '／'.join(challengers), game_index, date, place, source]
+		current_row = ['／'.join(champions), '／'.join(challengers), game_index, date, place]
 		rows.append(current_row) # type: ignore
 
 	return rows
