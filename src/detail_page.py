@@ -1,4 +1,5 @@
 import time
+import re
 
 from bs4 import BeautifulSoup
 from selenium.webdriver.common.by import By
@@ -31,6 +32,7 @@ def analyze_detail_page(detail_page_url: str, driver: WebDriver):
 	rows = [headers]
 	date = ''
 	place = ''
+	game_index = 0
 	source = detail_page_url
 
 	# ブラウザのHTMLを取得
@@ -50,13 +52,15 @@ def analyze_detail_page(detail_page_url: str, driver: WebDriver):
 			place = place_text.strip().replace('  ', '').replace('\n', '')
 
 	match_list = soup.select('.matchList.section > dl > dd')
-	game_index = 0
 	for game in match_list:
 		game_index = game_index + 1
 		champions = []
 		challengers = []
 		game_time = ''
 		finish = ''
+		win_name = ''
+		lose_name = ''
+		victory = ''
 		# n対nの場合があるのでforする
 		match_rows = game.select('.matchWrapper > .row.cf')
 		for match in match_rows:
@@ -91,8 +95,30 @@ def analyze_detail_page(detail_page_url: str, driver: WebDriver):
 			game_time = finish_list[0].strip()
 			finish = finish_list[1].strip()
 
+			# チャンピオンチームの勝敗
+			champ_game_image = match.select_one('.left > .resultImg > img')
+			if champ_game_image is not None:
+				src: str | None = champ_game_image.get('src') #type: ignore
+				if src is not None:
+					if 'win.png' in src:
+						win_name = champ_name
+						victory = 'champion'
+					elif 'lose.png' in src:
+						lose_name = champ_name
+
+			# チャレンジャーチームの勝敗
+			challenger_game_image = match.select_one('.right > .resultImg > img')
+			if challenger_game_image is not None:
+				src: str | None = challenger_game_image.get('src') #type: ignore
+				if src is not None:
+					if 'win.png' in src:
+						win_name = challenger_name
+						victory = 'challenger'
+					elif 'lose.png' in src:
+						lose_name = challenger_name
+
 		# 1列に詰める情報をまとめる
-		current_row = ['／'.join(champions), '／'.join(challengers), game_index, date, place, game_time, finish]
+		current_row = ['／'.join(champions), '／'.join(challengers), game_index, date, place, game_time, finish, win_name, lose_name, victory, source]
 		rows.append(current_row) # type: ignore
 
 	return rows
