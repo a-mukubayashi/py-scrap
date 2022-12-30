@@ -18,7 +18,8 @@ def read_detail_links():
 			rows.extend(row)
 		return rows
 
+# 詳細ページのデータをcsvに書き込み
 def write_detail_games(list):
-		with open('./csv/detail_games.csv', 'a') as f:
-			writer = csv.writer(f)
-			writer.writerows(list)
+	with open('./csv/detail_games.csv', 'a') as f:
+		writer = csv.writer(f)
+		writer.writerows(list)
