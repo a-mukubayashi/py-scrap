@@ -24,7 +24,7 @@ def get_detail_links(url: str, driver: WebDriver):
 			link_list.append(link.get_attribute('href'))
 		# csvに書き込み
 		csv_defs.write_detail_links(link_list)
-		time.sleep(1)
+		time.sleep(2)
 
 def analyze_detail_page(detail_page_url: str, driver: WebDriver):
 	driver.get(detail_page_url)
@@ -121,4 +121,4 @@ def analyze_detail_page(detail_page_url: str, driver: WebDriver):
 		rows.append(current_row)
 	# 日時でcsvに書き込み
 	csv_defs.write_detail_games(rows)
-	time.sleep(1)
+	time.sleep(2)
