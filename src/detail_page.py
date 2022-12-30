@@ -24,7 +24,7 @@ def get_detail_links(url: str, driver: WebDriver):
 			link_list.append(link.get_attribute('href'))
 		# csvに書き込み
 		csv_defs.write_detail_links(link_list)
-		time.sleep(2)
+		time.sleep(1)
 
 def analyze_detail_page(detail_page_url: str, driver: WebDriver):
 	driver.get(detail_page_url)
@@ -32,6 +32,7 @@ def analyze_detail_page(detail_page_url: str, driver: WebDriver):
 	place = ''
 	game_index = 0
 	source = detail_page_url
+	rows = []
 
 	# ブラウザのHTMLを取得
 	soup = BeautifulSoup(driver.page_source, features="html.parser")
@@ -117,6 +118,7 @@ def analyze_detail_page(detail_page_url: str, driver: WebDriver):
 
 		# 1列に詰める情報をまとめる
 		current_row = ['／'.join(champions), '／'.join(challengers), game_index, date, place, game_time, finish, win_name, lose_name, victory, source]
-		# 1行ごとcsvに書き込み
-		csv_defs.write_detail_games([current_row])
-		time.sleep(2)
+		rows.append(current_row)
+	# 日時でcsvに書き込み
+	csv_defs.write_detail_games(rows)
+	time.sleep(1)
