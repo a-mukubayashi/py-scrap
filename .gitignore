@@ -1,0 +1,6 @@
+chromedriver_mac_arm64
+venv
+csv
+.DS_Store
+.envrc
+.env
