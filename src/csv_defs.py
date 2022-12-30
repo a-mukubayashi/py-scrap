@@ -17,3 +17,8 @@ def read_detail_links():
 		for row in reader:
 			rows.extend(row)
 		return rows
+
+def write_detail_games(list: list[list[str]]):
+		with open('./csv/detail_games.csv', 'w') as f:
+			writer = csv.writer(f)
+			writer.writerows(list)

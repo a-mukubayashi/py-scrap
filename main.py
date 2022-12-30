@@ -1,3 +1,4 @@
+from bs4 import BeautifulSoup
 from selenium import webdriver
 from selenium.webdriver.chrome.options import Options
 from selenium.webdriver.chrome.service import Service as ChromeService
@@ -14,7 +15,7 @@ options.add_argument("--disable-browser-side-navigation")
 options.add_argument("--disable-dev-shm-usage")
 options.add_argument("--disable-extensions")
 options.add_argument("--disable-gpu")
-# options.add_argument("--headless")  # ブラウザを非表示で起動する
+options.add_argument("--headless")  # ブラウザを非表示で起動する
 options.add_argument("--ignore-certificate-errors")
 options.add_argument("--incognito")
 options.add_argument("--no-sandbox")
@@ -29,11 +30,16 @@ driver = webdriver.Chrome(service=service, options=options)
 # 要素が見つかるまで10秒待つ
 driver.implicitly_wait(10)
 
-# 詳細ページのリンクを取得
-detail_links = detail_page.get_page_links(config.URL, driver)
+# # 詳細ページのリンクを取得
+# detail_links = detail_page.get_detail_links(config.URL, driver)
 
-# csvに書き込み
-csv_defs.write_detail_links(detail_links)
+# # csvに書き込み
+# csv_defs.write_detail_links(detail_links)
+
+# 詳細ページの解析
+links = csv_defs.read_detail_links()
+games = detail_page.analyze_detail_page(links[0], driver)
+csv_defs.write_detail_games(games)
 
 driver.quit()
 print("=== All done! ===")
