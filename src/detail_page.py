@@ -55,6 +55,8 @@ def analyze_detail_page(detail_page_url: str, driver: WebDriver):
 		game_index = game_index + 1
 		champions = []
 		challengers = []
+		game_time = ''
+		finish = ''
 		# n対nの場合があるのでforする
 		match_rows = game.select('.matchWrapper > .row.cf')
 		for match in match_rows:
@@ -80,14 +82,17 @@ def analyze_detail_page(detail_page_url: str, driver: WebDriver):
 				challenger_name = challenger_tag.text
 			challengers.extend([challenger_name])
 
-			# finish
+			# game_time, finish
 			finish_element = game.select_one('.finish > a')
-			finish = ''
+			finish_section = ''
 			if finish_element is not None:
-				finish = finish_element.text
-			print(finish)
+				finish_section = finish_element.text
+			finish_list = finish_section.split('　')
+			game_time = finish_list[0].strip()
+			finish = finish_list[1].strip()
+
 		# 1列に詰める情報をまとめる
-		current_row = ['／'.join(champions), '／'.join(challengers), game_index, date, place]
+		current_row = ['／'.join(champions), '／'.join(challengers), game_index, date, place, game_time, finish]
 		rows.append(current_row) # type: ignore
 
 	return rows
